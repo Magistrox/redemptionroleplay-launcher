@@ -27,9 +27,7 @@
       "releaseType": "release"
     }
   },
-  "dependencies": {
-    "electron-updater": "^6.3.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "electron":         "^33.0.0",
     "electron-builder": "^25.0.0",

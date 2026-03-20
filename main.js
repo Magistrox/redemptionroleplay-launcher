@@ -1,21 +1,117 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
-const { autoUpdater }                         = require('electron-updater');
 const { exec }                                = require('child_process');
+const https                                   = require('https');
 const path                                    = require('path');
 const fs                                      = require('fs');
 const os                                      = require('os');
 
-// Support portable : indique à electron-updater où stocker le téléchargement
+// Support portable
 if (process.env.PORTABLE_EXECUTABLE_DIR) {
   app.setPath('userData', path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'launcher-data'));
 }
 
-// ── Configuration du serveur ──────────────
-const SERVER_URL = 'https://jouer.redemptionrp.xyz';
+// ── Configuration ──────────────────────────
+const SERVER_URL    = 'https://jouer.redemptionrp.xyz';
+const GITHUB_OWNER  = 'Magistrox';
+const GITHUB_REPO   = 'redemptionroleplay-launcher';
 
-// ─────────────────────────────────────────
 let win;
+let downloadedExePath = null;
 
+// ── Comparaison de version ─────────────────
+function isNewer(latest, current) {
+  const l = latest.replace('v', '').split('.').map(Number);
+  const c = current.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((l[i] || 0) > (c[i] || 0)) return true;
+    if ((l[i] || 0) < (c[i] || 0)) return false;
+  }
+  return false;
+}
+
+// ── Requête HTTPS avec suivi des redirections ─
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, { headers: { 'User-Agent': 'redemption-launcher' } }, res => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return resolve(httpsGet(res.headers.location));
+      }
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => resolve({ status: res.statusCode, data }));
+    }).on('error', reject);
+  });
+}
+
+// ── Téléchargement avec progression ───────
+function downloadExe(url, dest, onProgress) {
+  return new Promise((resolve, reject) => {
+    const doRequest = (url) => {
+      https.get(url, { headers: { 'User-Agent': 'redemption-launcher' } }, res => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          return doRequest(res.headers.location);
+        }
+        const total     = parseInt(res.headers['content-length'], 10) || 0;
+        let downloaded  = 0;
+        const startTime = Date.now();
+        const file      = fs.createWriteStream(dest);
+
+        res.on('data', chunk => {
+          downloaded += chunk.length;
+          const elapsed = (Date.now() - startTime) / 1000 || 0.001;
+          onProgress?.({
+            percent:        total ? (downloaded / total) * 100 : 0,
+            bytesPerSecond: downloaded / elapsed,
+          });
+        });
+
+        res.pipe(file);
+        file.on('finish', () => { file.close(); resolve(); });
+        file.on('error', reject);
+      }).on('error', reject);
+    };
+    doRequest(url);
+  });
+}
+
+// ── Vérification et téléchargement MAJ ────
+async function checkAndUpdate() {
+  try {
+    const { data } = await httpsGet(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`
+    );
+    const release       = JSON.parse(data);
+    const latestVersion = release.tag_name;
+    const current       = app.getVersion();
+
+    if (!isNewer(latestVersion, current)) {
+      win?.webContents.send('update-not-available');
+      return;
+    }
+
+    const asset = release.assets?.find(a => a.name.endsWith('.exe'));
+    if (!asset) {
+      win?.webContents.send('update-not-available');
+      return;
+    }
+
+    win?.webContents.send('update-downloading');
+
+    const tmpPath = path.join(os.tmpdir(), 'rp-update.exe');
+    await downloadExe(asset.browser_download_url, tmpPath, (progress) => {
+      win?.webContents.send('update-progress', progress);
+    });
+
+    downloadedExePath = tmpPath;
+    win?.webContents.send('update-ready');
+
+  } catch (err) {
+    console.error('Update check failed:', err.message);
+    win?.webContents.send('update-not-available');
+  }
+}
+
+// ── Création de la fenêtre ─────────────────
 function createWindow() {
   win = new BrowserWindow({
     width:           1100,
@@ -34,27 +130,23 @@ function createWindow() {
 
   win.loadFile(path.join(__dirname, 'index.html'));
 
-  // Ouvrir les liens externes dans le navigateur par défaut
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  // Vérifier les mises à jour une fois la page chargée
   win.webContents.once('did-finish-load', () => {
     if (!app.isPackaged) {
-      // En dev, l'updater ne fonctionne pas → afficher le launcher directement
       win.webContents.send('update-not-available');
       return;
     }
-    autoUpdater.checkForUpdates();
-    setInterval(() => autoUpdater.checkForUpdates(), 15 * 60 * 1000);
+    checkAndUpdate();
+    setInterval(checkAndUpdate, 15 * 60 * 1000);
   });
 }
 
 app.whenReady().then(() => {
   createWindow();
-
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
@@ -64,56 +156,19 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// ── Auto-update events ────────────────────
-autoUpdater.on('checking-for-update', () => {
-  win?.webContents.send('update-checking');
-});
-
-autoUpdater.on('update-available', () => {
-  win?.webContents.send('update-downloading');
-});
-
-autoUpdater.on('update-not-available', () => {
-  win?.webContents.send('update-not-available');
-});
-
-autoUpdater.on('download-progress', (progress) => {
-  win?.webContents.send('update-progress', progress);
-});
-
-let downloadedExePath = null;
-
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateUrl, info) => {
-  // electron-updater stocke le fichier dans le cache app
-  const cacheDir = path.join(app.getPath('userData'), 'pending');
-  if (fs.existsSync(cacheDir)) {
-    const files = fs.readdirSync(cacheDir).filter(f => f.endsWith('.exe'));
-    if (files.length) downloadedExePath = path.join(cacheDir, files[0]);
-  }
-  win?.webContents.send('update-ready');
-});
-
-autoUpdater.on('error', (err) => {
-  console.error('Updater error:', err.message);
-  win?.webContents.send('update-not-available');
-});
-
 // ── IPC handlers ──────────────────────────
 ipcMain.on('play', () => {
-  const url = `fivem://connect/${SERVER_URL}`;
-  exec(`explorer.exe "${url}"`);
+  exec(`explorer.exe "fivem://connect/${SERVER_URL}"`);
 });
 
 ipcMain.handle('get-version', () => app.getVersion());
-ipcMain.on('install-update', () => {
-  const exePath    = process.env.PORTABLE_EXECUTABLE_FILE || app.getPath('exe');
-  const updatePath = downloadedExePath || path.join(app.getPath('userData'), 'pending', 'update.exe');
 
-  // Script batch : attend que l'app ferme, remplace l'exe, relance
+ipcMain.on('install-update', () => {
+  const exePath = process.env.PORTABLE_EXECUTABLE_FILE || app.getPath('exe');
   const batPath = path.join(os.tmpdir(), 'rp-update.bat');
-  const bat = `@echo off
+  const bat     = `@echo off
 timeout /t 2 /nobreak >nul
-copy /y "${updatePath}" "${exePath}"
+copy /y "${downloadedExePath}" "${exePath}"
 start "" "${exePath}"
 del "%~f0"`;
 
@@ -121,5 +176,6 @@ del "%~f0"`;
   exec(`cmd /c "${batPath}"`, { detached: true, windowsHide: true });
   app.quit();
 });
-ipcMain.on('minimize',       () => win?.minimize());
-ipcMain.on('close',          () => win?.close());
+
+ipcMain.on('minimize', () => win?.minimize());
+ipcMain.on('close',    () => win?.close());
