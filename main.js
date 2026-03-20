@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
-const { exec }                                = require('child_process');
+const { exec, spawn }                         = require('child_process');
 const https                                   = require('https');
 const path                                    = require('path');
 const fs                                      = require('fs');
@@ -173,7 +173,12 @@ start "" "${exePath}"
 del "%~f0"`;
 
   fs.writeFileSync(batPath, bat);
-  exec(`cmd /c "${batPath}"`, { detached: true, windowsHide: true });
+  const proc = spawn('cmd.exe', ['/c', batPath], {
+    detached:    true,
+    stdio:       'ignore',
+    windowsHide: true,
+  });
+  proc.unref();
   app.quit();
 });
 
