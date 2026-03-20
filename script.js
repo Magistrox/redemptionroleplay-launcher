@@ -64,14 +64,16 @@ async function fetchNews() {
     const html = await res.text();
 
     if (html.trim().toLowerCase().includes('aucune')) {
-      newsPanel.hidden = true;
+      newsPanel.style.display = 'none';
       return;
     }
 
-    newsPanel.hidden   = false;
-    newsBody.innerHTML = html;
-  } catch {
-    newsBody.innerHTML = '<p class="news-loading">Impossible de charger les actualités.</p>';
+    newsPanel.style.display = 'flex';
+    newsBody.innerHTML      = html;
+  } catch (e) {
+    newsPanel.style.display = 'flex';
+    newsBody.innerHTML      = '<p class="news-loading">Impossible de charger les actualités.</p>';
+    console.error('News fetch error:', e);
   }
 }
 
