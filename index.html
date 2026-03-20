@@ -55,7 +55,17 @@
       <span id="play-label">JOUER</span>
     </button>
 
-    <div class="status">
+    <div id="countdown" class="countdown" hidden>
+      <div class="countdown-unit"><span id="cd-days">00</span><small>JOURS</small></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cd-hours">00</span><small>HEURES</small></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cd-minutes">00</span><small>MINUTES</small></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cd-seconds">00</span><small>SECONDES</small></div>
+    </div>
+
+    <div id="status" class="status">
       <span class="status-dot"></span>
       <span class="status-text">Serveur en ligne</span>
     </div>
@@ -100,6 +110,19 @@
   <footer class="footer">
     <span></span>
   </footer>
+
+  <!-- ── Écran mise à jour ─────────────── -->
+  <div id="update-screen" class="update-screen">
+    <div class="update-screen-logo">
+      <span class="diamond">◆</span>
+      <span class="name">REDEMPTION</span><span class="rp">roleplay</span>
+    </div>
+    <p id="update-screen-label" class="update-screen-label">Vérification des mises à jour…</p>
+    <div id="update-screen-track" class="update-screen-track" hidden>
+      <div id="update-screen-fill" class="update-screen-fill"></div>
+    </div>
+    <p id="update-screen-pct" class="update-screen-pct"></p>
+  </div>
 
   <script src="script.js"></script>
 </body>

@@ -118,34 +118,47 @@ fetchNews();
 setInterval(fetchNews, 10 * 60 * 1000);
 
 // ── Auto-update ───────────────────────────
-const updateBar    = document.getElementById('update-bar');
-const updateLabel  = document.getElementById('update-label');
-const updatePct    = document.getElementById('update-percent');
-const updateTrack  = document.getElementById('update-track');
-const updateFill   = document.getElementById('update-fill');
-const btnUpdate    = document.getElementById('btn-update');
+const updateScreen      = document.getElementById('update-screen');
+const updateScreenLabel = document.getElementById('update-screen-label');
+const updateScreenTrack = document.getElementById('update-screen-track');
+const updateScreenFill  = document.getElementById('update-screen-fill');
+const updateScreenPct   = document.getElementById('update-screen-pct');
 
-// 1. Téléchargement démarre
+function showLauncher() {
+  updateScreen.classList.add('hidden');
+}
+
+// Aucune mise à jour → afficher le launcher
+window.launcher.onUpdateNotAvailable(() => showLauncher());
+
+// Mise à jour disponible → téléchargement
 window.launcher.onUpdateDownloading(() => {
-  updateBar.hidden   = false;
-  updateTrack.hidden = false;
+  updateScreenLabel.textContent = 'Téléchargement de la mise à jour…';
+  updateScreenTrack.hidden      = false;
 });
 
-// 2. Progression en temps réel
+// Progression
 window.launcher.onUpdateProgress(({ percent, bytesPerSecond }) => {
-  const pct    = Math.round(percent);
-  const speed  = (bytesPerSecond / 1024 / 1024).toFixed(1);
-  updateFill.style.width    = `${pct}%`;
-  updateLabel.textContent   = `⬇ Téléchargement en cours… ${speed} Mo/s`;
-  updatePct.textContent     = `${pct}%`;
+  const pct   = Math.round(percent);
+  const speed = (bytesPerSecond / 1024 / 1024).toFixed(1);
+  updateScreenFill.style.width = `${pct}%`;
+  updateScreenPct.textContent  = `${pct}% — ${speed} Mo/s`;
 });
 
-// 3. Prêt à installer
+// Téléchargement terminé → installation automatique
 window.launcher.onUpdateReady(() => {
-  updateFill.style.width  = '100%';
-  updateLabel.textContent = '✦ Mise à jour prête';
-  updatePct.textContent   = '';
-  btnUpdate.hidden        = false;
+  updateScreenFill.style.width = '100%';
+  updateScreenPct.textContent  = '';
+  let count = 3;
+  updateScreenLabel.textContent = `Installation dans ${count}…`;
+  const t = setInterval(() => {
+    count--;
+    if (count <= 0) {
+      clearInterval(t);
+      updateScreenLabel.textContent = 'Installation…';
+      window.launcher.installUpdate();
+    } else {
+      updateScreenLabel.textContent = `Installation dans ${count}…`;
+    }
+  }, 1000);
 });
-
-btnUpdate.addEventListener('click', () => window.launcher.installUpdate());

@@ -56,8 +56,16 @@ app.on('window-all-closed', () => {
 });
 
 // ── Auto-update events ────────────────────
+autoUpdater.on('checking-for-update', () => {
+  win?.webContents.send('update-checking');
+});
+
 autoUpdater.on('update-available', () => {
   win?.webContents.send('update-downloading');
+});
+
+autoUpdater.on('update-not-available', () => {
+  win?.webContents.send('update-not-available');
 });
 
 autoUpdater.on('download-progress', (progress) => {
@@ -70,6 +78,7 @@ autoUpdater.on('update-downloaded', () => {
 
 autoUpdater.on('error', (err) => {
   console.error('Updater error:', err.message);
+  win?.webContents.send('update-not-available');
 });
 
 // ── IPC handlers ──────────────────────────
