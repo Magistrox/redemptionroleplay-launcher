@@ -32,19 +32,51 @@ async function fetchPlayerCount() {
     const res  = await fetch(CFX_API);
     const json = await res.json();
 
-    const count = json.Data?.clients        ?? 0;
-    const max   = json.Data?.sv_maxclients  ?? '?';
+    if (json.error || !json.Data) {
+      statusDot.style.background = '#f59e0b';
+      statusText.textContent     = 'En maintenance';
+      return;
+    }
+
+    const count = json.Data.clients       ?? 0;
+    const max   = json.Data.sv_maxclients ?? '?';
 
     statusDot.style.background = '#4ade80';
     statusText.textContent     = `${count} / ${max} joueurs en ligne`;
   } catch {
-    statusDot.style.background = '#ef4444';
-    statusText.textContent     = 'Serveur hors ligne';
+    statusDot.style.background = '#f59e0b';
+    statusText.textContent     = 'En maintenance';
   }
 }
 
 fetchPlayerCount();
 setInterval(fetchPlayerCount, 5 * 60 * 1000);
+
+// ── News ──────────────────────────────────
+const NEWS_URL  = 'https://redemptionrp.xyz/launchernews.php';
+const newsBody  = document.getElementById('news-body');
+
+const newsPanel = document.querySelector('.news-panel');
+
+async function fetchNews() {
+  try {
+    const res  = await fetch(NEWS_URL + '?t=' + Date.now());
+    const html = await res.text();
+
+    if (html.trim().toLowerCase().includes('aucune')) {
+      newsPanel.hidden = true;
+      return;
+    }
+
+    newsPanel.hidden   = false;
+    newsBody.innerHTML = html;
+  } catch {
+    newsBody.innerHTML = '<p class="news-loading">Impossible de charger les actualités.</p>';
+  }
+}
+
+fetchNews();
+setInterval(fetchNews, 10 * 60 * 1000);
 
 // ── Auto-update ───────────────────────────
 const updateBar    = document.getElementById('update-bar');
