@@ -150,6 +150,13 @@ body {
   z-index: 1;
 }
 
+.eyebrow a {
+  color: inherit;
+  text-decoration: none;
+}
+.eyebrow a:hover {
+  text-decoration: underline;
+}
 .eyebrow {
   font-family: var(--font-u);
   font-size: 0.72rem;

@@ -1,8 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const { autoUpdater }                  = require('electron-updater');
-const { exec }                         = require('child_process');
-const path                             = require('path');
-const fs                               = require('fs');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { autoUpdater }                         = require('electron-updater');
+const { exec }                                = require('child_process');
+const path                                    = require('path');
+const fs                                      = require('fs');
 
 // Support portable : indique à electron-updater où stocker le téléchargement
 if (process.env.PORTABLE_EXECUTABLE_DIR) {
@@ -32,6 +32,12 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, 'index.html'));
+
+  // Ouvrir les liens externes dans le navigateur par défaut
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 }
 
 app.whenReady().then(() => {
