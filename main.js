@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const { autoUpdater }                         = require('electron-updater');
 const { exec }                                = require('child_process');
 const path                                    = require('path');
+const fs                                      = require('fs');
+const os                                      = require('os');
 
 // Support portable : indique à electron-updater où stocker le téléchargement
 if (process.env.PORTABLE_EXECUTABLE_DIR) {
@@ -79,7 +81,15 @@ autoUpdater.on('download-progress', (progress) => {
   win?.webContents.send('update-progress', progress);
 });
 
-autoUpdater.on('update-downloaded', () => {
+let downloadedExePath = null;
+
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateUrl, info) => {
+  // electron-updater stocke le fichier dans le cache app
+  const cacheDir = path.join(app.getPath('userData'), 'pending');
+  if (fs.existsSync(cacheDir)) {
+    const files = fs.readdirSync(cacheDir).filter(f => f.endsWith('.exe'));
+    if (files.length) downloadedExePath = path.join(cacheDir, files[0]);
+  }
   win?.webContents.send('update-ready');
 });
 
@@ -95,6 +105,21 @@ ipcMain.on('play', () => {
 });
 
 ipcMain.handle('get-version', () => app.getVersion());
-ipcMain.on('install-update', () => autoUpdater.quitAndInstall());
+ipcMain.on('install-update', () => {
+  const exePath    = process.env.PORTABLE_EXECUTABLE_FILE || app.getPath('exe');
+  const updatePath = downloadedExePath || path.join(app.getPath('userData'), 'pending', 'update.exe');
+
+  // Script batch : attend que l'app ferme, remplace l'exe, relance
+  const batPath = path.join(os.tmpdir(), 'rp-update.bat');
+  const bat = `@echo off
+timeout /t 2 /nobreak >nul
+copy /y "${updatePath}" "${exePath}"
+start "" "${exePath}"
+del "%~f0"`;
+
+  fs.writeFileSync(batPath, bat);
+  exec(`cmd /c "${batPath}"`, { detached: true, windowsHide: true });
+  app.quit();
+});
 ipcMain.on('minimize',       () => win?.minimize());
 ipcMain.on('close',          () => win?.close());
