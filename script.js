@@ -128,11 +128,28 @@ function showLauncher() {
   updateScreen.classList.add('hidden');
 }
 
+// Countdown de vérification (5s)
+let checkDone = false;
+let checkCount = 5;
+updateScreenLabel.textContent = `Vérification des mises à jour… ${checkCount}s`;
+const checkInterval = setInterval(() => {
+  checkCount--;
+  if (checkCount > 0) {
+    updateScreenLabel.textContent = `Vérification des mises à jour… ${checkCount}s`;
+  } else {
+    clearInterval(checkInterval);
+  }
+}, 1000);
+
 // Aucune mise à jour → afficher le launcher
-window.launcher.onUpdateNotAvailable(() => showLauncher());
+window.launcher.onUpdateNotAvailable(() => {
+  clearInterval(checkInterval);
+  showLauncher();
+});
 
 // Mise à jour disponible → téléchargement
 window.launcher.onUpdateDownloading(() => {
+  clearInterval(checkInterval);
   updateScreenLabel.textContent = 'Téléchargement de la mise à jour…';
   updateScreenTrack.hidden      = false;
 });
