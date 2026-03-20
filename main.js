@@ -37,14 +37,21 @@ function createWindow() {
     shell.openExternal(url);
     return { action: 'deny' };
   });
+
+  // Vérifier les mises à jour une fois la page chargée
+  win.webContents.once('did-finish-load', () => {
+    if (!app.isPackaged) {
+      // En dev, l'updater ne fonctionne pas → afficher le launcher directement
+      win.webContents.send('update-not-available');
+      return;
+    }
+    autoUpdater.checkForUpdates();
+    setInterval(() => autoUpdater.checkForUpdates(), 15 * 60 * 1000);
+  });
 }
 
 app.whenReady().then(() => {
   createWindow();
-
-  // Vérifier les mises à jour au démarrage puis toutes les 15 minutes
-  autoUpdater.checkForUpdates();
-  setInterval(() => autoUpdater.checkForUpdates(), 15 * 60 * 1000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

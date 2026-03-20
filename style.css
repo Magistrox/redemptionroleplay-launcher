@@ -505,6 +505,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   gap: 18px;
   -webkit-app-region: drag;
 }
@@ -513,17 +514,6 @@ body {
   display: none;
 }
 
-.update-screen-logo {
-  font-family: var(--font-d);
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  margin-bottom: 8px;
-}
-
-.update-screen-logo .diamond { color: var(--gold); margin-right: 8px; }
-.update-screen-logo .name    { color: var(--text); }
-.update-screen-logo .rp      { color: var(--gold); font-size: 0.75em; margin-left: 6px; }
 
 .update-screen-label {
   font-family: var(--font-ui);

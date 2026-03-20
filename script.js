@@ -128,8 +128,16 @@ function showLauncher() {
   updateScreen.classList.add('hidden');
 }
 
-// Countdown de vérification (5s)
-let checkDone = false;
+// Countdown 5s + vérification : on attend les deux
+let countdownDone = false;
+let noUpdateReady = false;
+
+function tryShowLauncher() {
+  if (countdownDone && noUpdateReady) showLauncher();
+}
+
+setTimeout(() => showLauncher(), 15000); // fallback si aucun événement reçu
+
 let checkCount = 5;
 updateScreenLabel.textContent = `Vérification des mises à jour… ${checkCount}s`;
 const checkInterval = setInterval(() => {
@@ -138,18 +146,21 @@ const checkInterval = setInterval(() => {
     updateScreenLabel.textContent = `Vérification des mises à jour… ${checkCount}s`;
   } else {
     clearInterval(checkInterval);
+    countdownDone = true;
+    tryShowLauncher();
   }
 }, 1000);
 
-// Aucune mise à jour → afficher le launcher
+// Aucune mise à jour → on attend que le countdown soit fini
 window.launcher.onUpdateNotAvailable(() => {
-  clearInterval(checkInterval);
-  showLauncher();
+  noUpdateReady = true;
+  tryShowLauncher();
 });
 
-// Mise à jour disponible → téléchargement
+// Mise à jour disponible → on coupe le countdown et on télécharge
 window.launcher.onUpdateDownloading(() => {
   clearInterval(checkInterval);
+  countdownDone = true;
   updateScreenLabel.textContent = 'Téléchargement de la mise à jour…';
   updateScreenTrack.hidden      = false;
 });
