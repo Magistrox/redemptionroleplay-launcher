@@ -16,8 +16,13 @@
     "files": ["**/*", "!dist/**", "!node_modules/.cache/**"],
     "win": {
       "icon": "assets/img/logo.ico",
-      "target": [{ "target": "portable", "arch": ["x64"] }],
-      "artifactName": "Redemption roleplay.exe"
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "artifactName": "Redemption roleplay Setup.exe"
+    },
+    "nsis": {
+      "oneClick":          true,
+      "perMachine":        false,
+      "language": "1036"
     },
     "publish": {
       "provider":    "github",

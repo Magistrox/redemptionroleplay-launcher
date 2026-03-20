@@ -2,6 +2,12 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const { autoUpdater }                  = require('electron-updater');
 const { exec }                         = require('child_process');
 const path                             = require('path');
+const fs                               = require('fs');
+
+// Support portable : indique à electron-updater où stocker le téléchargement
+if (process.env.PORTABLE_EXECUTABLE_DIR) {
+  app.setPath('userData', path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'launcher-data'));
+}
 
 // ── Configuration du serveur ──────────────
 const SERVER_URL = 'https://jouer.redemptionrp.xyz';
