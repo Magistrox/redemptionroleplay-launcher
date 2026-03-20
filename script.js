@@ -44,7 +44,7 @@ async function fetchPlayerCount() {
 }
 
 fetchPlayerCount();
-setInterval(fetchPlayerCount, 30_000);
+setInterval(fetchPlayerCount, 5 * 60 * 1000);
 
 // ── Auto-update ───────────────────────────
 const updateBar    = document.getElementById('update-bar');
