@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const { autoUpdater }                         = require('electron-updater');
 const { exec }                                = require('child_process');
 const path                                    = require('path');
-const fs                                      = require('fs');
 
 // Support portable : indique à electron-updater où stocker le téléchargement
 if (process.env.PORTABLE_EXECUTABLE_DIR) {

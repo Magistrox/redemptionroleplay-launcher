@@ -1,13 +1,14 @@
 {
   "name": "redemption-launcher",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Redemption roleplay — Launcher",
   "main": "main.js",
   "scripts": {
     "start":   "electron .",
-    "predist": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && node scripts/make-icon.js",
-    "dist":    "electron-builder --win portable",
-    "release": "electron-builder --win portable --publish=always"
+    "predist":    "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && node scripts/make-icon.js",
+    "prerelease": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && node scripts/make-icon.js",
+    "dist":       "electron-builder --win",
+    "release":    "electron-builder --win --publish=always"
   },
   "build": {
     "appId": "xyz.redemptionrp.launcher",
@@ -17,7 +18,7 @@
     "win": {
       "icon": "assets/img/logo.ico",
       "target": [{ "target": "nsis", "arch": ["x64"] }],
-      "artifactName": "Redemption roleplay Setup.exe"
+      "artifactName": "Redemption roleplay.exe"
     },
     "nsis": {
       "oneClick":          true,
