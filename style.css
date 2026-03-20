@@ -330,6 +330,40 @@ body {
 .update-bar button[hidden] { display: none; }
 
 /* ── Footer ────────────────────────────────── */
+/* ── Liens rapides ─────────────────────────── */
+.quick-links {
+  position: fixed;
+  bottom: 14px;
+  left: 18px;
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+}
+
+.quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid rgba(245, 166, 35, 0.25);
+  border-radius: 4px;
+  background: rgba(245, 166, 35, 0.05);
+  color: rgba(245, 166, 35, 0.6);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.quick-link:hover {
+  color: var(--gold);
+  border-color: rgba(245, 166, 35, 0.6);
+  background: rgba(245, 166, 35, 0.1);
+}
+
 .footer {
   position: fixed;
   bottom: 12px;
