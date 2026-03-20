@@ -21,11 +21,48 @@ btnPlay.addEventListener('click', () => {
   }, 5000);
 });
 
+// ── Countdown ─────────────────────────────
+const LAUNCH_DATE  = new Date('2026-04-11T19:00:00-04:00'); // 19h00 heure de l'Est (EDT)
+const cdEl         = document.getElementById('countdown');
+const cdDays       = document.getElementById('cd-days');
+const cdHours      = document.getElementById('cd-hours');
+const cdMinutes    = document.getElementById('cd-minutes');
+const cdSeconds    = document.getElementById('cd-seconds');
+const statusEl     = document.getElementById('status');
+
+function updateCountdown() {
+  const diff = LAUNCH_DATE - Date.now();
+
+  if (diff <= 0) {
+    cdEl.hidden             = true;
+    btnPlay.style.display   = '';
+    statusEl.style.display  = '';
+    return;
+  }
+
+  btnPlay.style.display   = 'none';
+  statusEl.style.display  = 'none';
+  cdEl.hidden             = false;
+
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000)  / 60000);
+  const s = Math.floor((diff % 60000)    / 1000);
+
+  cdDays.textContent    = String(d).padStart(2, '0');
+  cdHours.textContent   = String(h).padStart(2, '0');
+  cdMinutes.textContent = String(m).padStart(2, '0');
+  cdSeconds.textContent = String(s).padStart(2, '0');
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
 // ── Compteur de joueurs (API CFX publique) ─
 const CFX_ID     = 'b78a3l';
 const CFX_API    = `https://servers-frontend.fivem.net/api/servers/single/${CFX_ID}`;
-const statusDot  = document.querySelector('.status-dot');
-const statusText = document.querySelector('.status-text');
+const statusDot  = document.querySelector('#status .status-dot');
+const statusText = document.querySelector('#status .status-text');
 
 async function fetchPlayerCount() {
   try {
