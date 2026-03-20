@@ -1,0 +1,334 @@
+/* ============================================
+   Redemption roleplay — Launcher Styles
+   ============================================ */
+
+:root {
+  --bg:    #0e0a23;
+  --gold:  #f5a623;
+  --text:  #ffffff;
+  --muted: #7b7b9e;
+  --border: rgba(255, 255, 255, 0.07);
+  --font-d: 'Barlow Condensed', sans-serif;
+  --font-u: 'Rajdhani', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+body {
+  font-family: var(--font-u);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.gold { color: var(--gold); }
+
+/* ── Fond ──────────────────────────────────── */
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.18;
+  filter: saturate(0.6) brightness(0.85);
+}
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 90% at 50% 40%, rgba(14,10,35,0.5) 0%, rgba(8,6,24,0.9) 100%);
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(245,166,35,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,166,35,0.05) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+}
+
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  animation: orb 7s ease-in-out infinite;
+}
+.orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(245,166,35,0.08) 0%, transparent 65%);
+  top: -200px; left: -150px;
+}
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(100,60,220,0.07) 0%, transparent 65%);
+  bottom: -100px; right: -80px;
+  animation-delay: 3.5s;
+}
+@keyframes orb {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+
+/* ── Barre de titre ────────────────────────── */
+.titlebar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 0 20px;
+  -webkit-app-region: drag;   /* toute la barre est draggable */
+  border-bottom: 1px solid var(--border);
+  background: rgba(8, 6, 24, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.titlebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-d);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.diamond { color: var(--gold); font-size: 0.75rem; }
+.rp { color: var(--gold); }
+
+.window-controls {
+  display: flex;
+  gap: 6px;
+  -webkit-app-region: no-drag;  /* les boutons ne doivent pas drag */
+}
+
+.window-controls button {
+  width: 30px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.window-controls button:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+#btn-close:hover { background: rgba(220,50,50,0.7); color: #fff; }
+
+/* ── Contenu ───────────────────────────────── */
+.content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 42px; /* compense la titlebar */
+  text-align: center;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-family: var(--font-u);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--gold);
+  opacity: 0.75;
+  margin-bottom: 18px;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-d);
+  font-size: clamp(4rem, 8vw, 6.5rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: 0.02em;
+  margin-bottom: 22px;
+}
+.title .gold {
+  animation: glow 3.5s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 28px rgba(245,166,35,0.5), 0 0 56px rgba(245,166,35,0.18); }
+  50%       { text-shadow: 0 0 40px rgba(245,166,35,0.9), 0 0 80px rgba(245,166,35,0.35); }
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 44px;
+}
+
+/* ── Bouton JOUER ──────────────────────────── */
+.btn-play {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 64px;
+  background: var(--gold);
+  color: #0a0820;
+  border: none;
+  border-radius: 5px;
+  font-family: var(--font-d);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  margin-bottom: 28px;
+}
+
+/* Glow derrière le bouton */
+.btn-play::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 8px;
+  background: rgba(245, 166, 35, 0.35);
+  filter: blur(16px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+.btn-play:hover { transform: scale(1.04); box-shadow: 0 8px 32px rgba(245,166,35,0.3); }
+.btn-play:hover::before { opacity: 1; }
+.btn-play:active { transform: scale(0.97); }
+.btn-play:disabled {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
+}
+.btn-play:disabled::before { opacity: 0; }
+
+.play-icon { flex-shrink: 0; }
+
+/* ── Statut serveur ────────────────────────── */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.45); }
+  50%       { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
+}
+
+/* ── Bandeau mise à jour ───────────────────── */
+.update-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 9px 20px;
+  background: rgba(8, 6, 24, 0.9);
+  border-top: 1px solid rgba(245, 166, 35, 0.25);
+  backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  z-index: 20;
+}
+.update-bar[hidden] { display: none; }
+
+.update-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  min-width: 200px;
+}
+
+#update-percent {
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.update-progress-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(245, 166, 35, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.update-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.6);
+}
+
+.update-bar button {
+  padding: 4px 16px;
+  background: var(--gold);
+  color: #0a0820;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-u);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+.update-bar button:hover { opacity: 0.85; }
+.update-bar button[hidden] { display: none; }
+
+/* ── Footer ────────────────────────────────── */
+.footer {
+  position: fixed;
+  bottom: 12px;
+  right: 18px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  opacity: 0.4;
+  z-index: 1;
+}

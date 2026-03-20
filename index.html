@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://servers-frontend.fivem.net">
+  <title>Redemption roleplay — Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── Fond ───────────────────────────── -->
+  <div class="bg" aria-hidden="true">
+    <img src="assets/img/1.jpg" class="bg-img" alt="">
+    <div class="bg-overlay"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+  </div>
+
+  <!-- ── Barre de titre (draggable) ─────── -->
+  <header class="titlebar">
+    <div class="titlebar-logo">
+      <span class="diamond">◆</span>
+      <span class="name">REDEMPTION</span><span class="rp">roleplay</span>
+    </div>
+    <div class="window-controls">
+      <button id="btn-minimize" title="Réduire">
+        <svg width="11" height="1" viewBox="0 0 11 1"><rect width="11" height="1" fill="currentColor"/></svg>
+      </button>
+      <button id="btn-close" title="Fermer">
+        <svg width="11" height="11" viewBox="0 0 11 11"><line x1="1" y1="1" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="1" x2="1" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Contenu principal ──────────────── -->
+  <main class="content">
+
+    <p class="eyebrow">by Magistrox, Bigbone_qchs et Twinzzz_qc</p>
+
+    <h1 class="title">
+      <span>REDEMPTION</span>
+      <span class="gold">ROLEPLAY</span>
+    </h1>
+
+    <p class="subtitle">Votre aventure commence maintenant.</p>
+
+    <button id="btn-play" class="btn-play">
+      <svg class="play-icon" width="16" height="18" viewBox="0 0 16 18" fill="currentColor" aria-hidden="true">
+        <path d="M0 0L16 9L0 18V0Z"/>
+      </svg>
+      <span id="play-label">JOUER</span>
+    </button>
+
+    <div class="status">
+      <span class="status-dot"></span>
+      <span class="status-text">Serveur en ligne</span>
+    </div>
+
+  </main>
+
+  <!-- ── Bandeau mise à jour ───────────── -->
+  <div class="update-bar" id="update-bar" hidden>
+    <div class="update-left">
+      <span id="update-label">⬇ Téléchargement en cours…</span>
+      <span id="update-percent"></span>
+    </div>
+    <div class="update-progress-track" id="update-track">
+      <div class="update-progress-fill" id="update-fill"></div>
+    </div>
+    <button id="btn-update" hidden>Redémarrer</button>
+  </div>
+
+  <!-- ── Version ────────────────────────── -->
+  <footer class="footer">
+    <span>v1.0.0</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
