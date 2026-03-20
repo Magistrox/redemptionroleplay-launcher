@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('launcher', {
+  version:       () => ipcRenderer.invoke('get-version'),
   play:          () => ipcRenderer.send('play'),
   minimize:      () => ipcRenderer.send('minimize'),
   close:         () => ipcRenderer.send('close'),

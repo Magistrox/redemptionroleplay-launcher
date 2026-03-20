@@ -1,3 +1,8 @@
+// ── Version ───────────────────────────────
+window.launcher.version().then(v => {
+  document.querySelector('.footer span').textContent = `v${v}`;
+});
+
 // ── Contrôles de fenêtre ──────────────────
 document.getElementById('btn-minimize').addEventListener('click', () => window.launcher.minimize());
 document.getElementById('btn-close').addEventListener('click',    () => window.launcher.close());

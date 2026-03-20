@@ -37,8 +37,9 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
-  // Vérifier les mises à jour (silencieux au démarrage)
+  // Vérifier les mises à jour au démarrage puis toutes les 15 minutes
   autoUpdater.checkForUpdates();
+  setInterval(() => autoUpdater.checkForUpdates(), 15 * 60 * 1000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -72,6 +73,7 @@ ipcMain.on('play', () => {
   exec(`explorer.exe "${url}"`);
 });
 
+ipcMain.handle('get-version', () => app.getVersion());
 ipcMain.on('install-update', () => autoUpdater.quitAndInstall());
 ipcMain.on('minimize',       () => win?.minimize());
 ipcMain.on('close',          () => win?.close());
