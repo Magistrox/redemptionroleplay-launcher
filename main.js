@@ -5,10 +5,8 @@ const path                                    = require('path');
 const fs                                      = require('fs');
 const os                                      = require('os');
 
-// Support portable
-if (process.env.PORTABLE_EXECUTABLE_DIR) {
-  app.setPath('userData', path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'launcher-data'));
-}
+// Toujours stocker les données dans AppData du joueur
+app.setPath('userData', path.join(app.getPath('appData'), 'RedemptionRP'));
 
 // ── Configuration ──────────────────────────
 const SERVER_URL    = 'https://jouer.redemptionrp.xyz';
